@@ -1,0 +1,95 @@
+import pandas as pd
+
+dict = {
+    "file_name": [
+        "1.png",
+        "2.png",
+        "3.png",
+        "5.png",
+        "6.png",
+        "7.png",
+        "8.png",
+        "9.png",
+        "10.png",
+        "11.png",
+        "12.png",
+        "13.png",
+        "14.png",
+        "15.png",
+        "16.png",
+        "17.png",
+        "18.png",
+        "19.png",
+        "20.png",
+        "21.png",
+        "22.png",
+        "23.png",
+        "24.png",
+        "25.png",
+        "26.png",
+        "27.png",
+        "28.png",
+        "29.png",
+        "30.png",
+        "31.png",
+        "32.png",
+        "33.png",
+        "34.png",
+        "35.png",
+        "36.png",
+        "37.png",
+        "38.png",
+        "39.png",
+
+    ],
+    "text": [
+        "liutao, Elegant woman with red lipstick, dark attire, warm light.",
+        "liutao, Elegant woman's side profile, dark hair, black and white outfit, soft colors.",
+        "liutao, Smiling woman with long dark hair, white shirt, plain background.",
+        "liutao, Woman in red suit, smiling softly, hands crossed on red backdrop.",
+        "liutao, Woman in Hanfu, fan, black hair, red lips, black backdrop.",
+        "liutao, Woman in profile, traditional attire, elaborate hairstyle, black backdrop.",
+        "liutao, Woman in white traditional dress, round fan, red lips, dark backdrop.",
+        "liutao, Woman in white traditional attire, fan, ornate hairpin, black backdrop.",
+        "liutao, Woman in white traditional dress, floral round fan, blue hair accessories.",
+        "liutao, Woman in gray coat, holding cup, dark backdrop, elegant style.",
+        "liutao in grey coat, long wavy hair, black bag, black backdrop.",
+        "liutao in dark grey coat, black bag, long wavy hair, red lips, dark backdrop.",
+        "liutao in black, smiles beside festive table, warm tones, classic style. ",
+        "liutao in red coat, seated smiling, gold accessories, dark backdrop.",
+        #
+        "liutao's close-up, finger on lips, purple gem ring, pearl drop earrings, soft teal background.",
+        "liutao's side profile, short hair, earrings, red lipstick, elegant, soft lighting.",
+        "liutao with black bob, red lips, earrings, flawless skin, dark backdrop.",
+        "liutao with black bob, bangs, earrings, red lips, gentle smile, dark backdrop",
+        "Close-up of liutao with black hair, red lips, earrings, dark backdrop. ",
+        "Close-up portrait of liutao, with brown eyes, dark hair with bangs, red lips, earrings, dark backdrop.",
+        "Portrait of liutao with long hair, earrings, soft smile, dark backdrop. Exquisite makeup with bright red lipstick.",
+        "Close-up portrait of liutao with black hair, red lipstick, earrings, soft smile, dark backdrop.",
+        "liutao, close-up portrait of woman with black hair, red lipstick, earrings, soft smile, dark backdrop.",
+        "liutao, Portrait of woman with brown hair, bright eyes, red top, soft smile. Black background emphasizes the subject. ",
+        "liutao in profile view, long dark hair, earrings, bright lipstick, dark backdrop.",
+        "liutao, close-up portrait of woman with dark hair, makeup, earrings, lace garment. Black backdrop emphasizes her features.",
+        "liutao, portrait of woman with short brown hair, bright makeup, earrings, ring, hand under chin pose.",
+        "portrait of liutao with warm smile, earrings, brown hair, makeup. Dark backdrop emphasizes her features.",
+        "Close-up portrait of liutao with warm smile, blue earrings, dark backdrop. ",
+        #
+        "liutao in Hanfu with red hooded cloak, golden crown, soft smile. Dark backdrop highlights the regal ensemble.",
+        "liutao waves with a smile, wearing white T-shirt and jeans. Dark backdrop frames the portrait.",
+        "liutao in white tee and jeans smiles, making peace sign. Black backdrop highlights casual style. ",
+        "liutao  in white tee and jeans forms heart gesture, gentle smile. Dark backdrop emphasizes the casual pose.",
+        "liutao  in white pinstripe suit, glasses, long hair, holding object in right hand. Black backdrop underscores formal professionalism.",
+        "liutao in white dress with feather-trimmed sleeves, smiling, looking back. Black backdrop highlights ethereal elegance.",
+        "liutao  in beige outfit with black belt, hands in pockets, golden earrings. Dark backdrop contrasts with serious expression.",
+        "liutao with long black hair in white dress, pearl ring, smiles gently. Leans head on hand against dark backdrop.",
+        "liutao sits curled up in black coat, heels. Monochrome backdrop enhances minimalist elegance.",
+    ]
+}
+
+print(len(dict["file_name"]))
+print(len(dict["text"]))
+
+df = pd.DataFrame(dict)
+
+df.to_csv("liutao.csv", index=False)
+
