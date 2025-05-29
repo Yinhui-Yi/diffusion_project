@@ -16,22 +16,22 @@ def get_seed(random_seed=None):
 
 def main():
     # download
-    snapshot_download(
-        model_id="MAILAND/majicflus_v1",
-        allow_file_pattern="majicflus_v134.safetensors",
-        cache_dir="models"
-    )
-    snapshot_download(
-        model_id="black-forest-labs/FLUX.1-dev",
-        allow_file_pattern=["ae.safetensors", "text_encoder/model.safetensors", "text_encoder_2/*"],
-        cache_dir="models"
-    )
+    # snapshot_download(
+    #     model_id="MAILAND/majicflus_v1",
+    #     allow_file_pattern="majicflus_v134.safetensors",
+    #     cache_dir="models"
+    # )
+    # snapshot_download(
+    #     model_id="black-forest-labs/FLUX.1-dev",
+    #     allow_file_pattern=["ae.safetensors", "text_encoder/model.safetensors", "text_encoder_2/*"],
+    #     cache_dir="models"
+    # )
 
     # set precision bfloat16
     model_manager = ModelManager(torch_dtype=torch.bfloat16)
     # load DiT with precision float8
     model_manager.load_models(
-        ["models/MAILAND/majicflus_v1/majicflus_v134.safetensors"],
+        ["/root/models/MAILAND/majicflus_v1/majicflus_v134.safetensors"],
         torch_dtype=torch.float8_e4m3fn,
         device="cpu"
     )
@@ -45,7 +45,7 @@ def main():
         torch_dtype=torch.bfloat16,
         device="cpu"
     )
-    model_manager.load_lora("models/lora/ClothingAdjuster3.safetensors", lora_alpha=0.0)
+    # model_manager.load_lora("/root/autodl-tmp/project/diffusion_project/models/lora/liutao/lightning_logs/version_0/checkpoints/epoch=0-step=500.ckpt", lora_alpha=1.0)
     # 开启量化与显存管理
     pipe = FluxImagePipeline.from_model_manager(model_manager, device="cuda")
     pipe.enable_cpu_offload()
@@ -64,15 +64,33 @@ def main():
     
     # prompt = "photo of an asian girl standing in a modern apartment, wearing a sheer white lace dress with floral patterns, spread legs, revealing red lace panties underneath, natural light, soft shadows, full body shot, medium shot, realistic photography, slightly wide shot"
     
-    prompt = "bride, full body"
+    prompt = "full body shot, naked Chinese bride smiles to camera, lifts up her luxury wedding dress to show her white pantyhose and panty, one of big breast naked and exposed, naked upper body, Half off,bride's legs are long, high heels"
+    negative_prompt = ""
     result = {
         "prompt": prompt,
         "images": []
     }
+    random_seed = get_seed(random_seed=3744326315)
+    image = pipe(
+        prompt=prompt, 
+        seed=random_seed,
+        cfg_scale=10,
+        negative_prompt=negative_prompt,
+        num_inference_steps=60
+    )
+    result["images"].append((image, random_seed))
+
+    prompt = "full body shot, naked Chinese bride smiles to camera, white pantyhose and panty, one of big breast naked and exposed, naked upper body, Half off, long legs, high heels"
     for i in range(4):
         random_seed = get_seed(random_seed=None)
         image = pipe(
-            prompt=prompt, seed=random_seed
+            prompt=prompt, 
+            seed=random_seed,
+            cfg_scale=7,
+            negative_prompt=negative_prompt,
+            num_inference_steps=60,
+            input_image=image,
+            denoising_strength=0.4,
         )
         result["images"].append((image, random_seed))
         with open("result.pkl", "wb") as f:
