@@ -8,14 +8,14 @@ python train/liutao/train_flux_lora.py \
   --dataset_path train/liutao/data/liutao \
   --output_path ./models/lora/liutao \
   --max_epochs 1 \
-  --steps_per_epoch 100 \
+  --steps_per_epoch 500 \
+  --steps_per_epoch 500 \
   --height 1024 \
   --width 1024 \
   --center_crop \
   --precision "bf16" \
-  --learning_rate 1e-4 \
-  --lora_rank 4 \
-  --lora_alpha 8 \
+  --learning_rate 1e-8 \
+  --lora_rank 128 \
+  --lora_alpha 256 \
   --use_gradient_checkpointing \
-  --align_to_opensource_format \
-  --quantize "float8_e4m3fn"
+  --align_to_opensource_format 

@@ -11,8 +11,7 @@ class LightningModel(LightningModelForT2ILoRA):
         torch_dtype=torch.float16, pretrained_weights=[], preset_lora_path=None,
         learning_rate=1e-4, use_gradient_checkpointing=True,
         lora_rank=4, lora_alpha=4, 
-        # lora_target_modules="to_q,to_k,to_v,to_out", 
-        lora_target_modules="to_q,to_k", 
+        lora_target_modules="to_q,to_k,to_v,to_out", 
         init_lora_weights="kaiming", pretrained_lora_path=None,
         state_dict_converter=None, quantize = None
     ):
