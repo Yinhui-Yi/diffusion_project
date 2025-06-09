@@ -14,19 +14,7 @@ def get_seed(random_seed=None):
     return random_seed
 
 
-def main():
-    # download
-    # snapshot_download(
-    #     model_id="MAILAND/majicflus_v1",
-    #     allow_file_pattern="majicflus_v134.safetensors",
-    #     cache_dir="models"
-    # )
-    # snapshot_download(
-    #     model_id="black-forest-labs/FLUX.1-dev",
-    #     allow_file_pattern=["ae.safetensors", "text_encoder/model.safetensors", "text_encoder_2/*"],
-    #     cache_dir="models"
-    # )
-
+def create_module_pipe(lora=False):
     # set precision bfloat16
     model_manager = ModelManager(torch_dtype=torch.bfloat16)
     # load DiT with precision float8
@@ -45,57 +33,90 @@ def main():
         torch_dtype=torch.bfloat16,
         device="cpu"
     )
-    # model_manager.load_lora("/root/autodl-tmp/project/diffusion_project/models/lora/liutao/lightning_logs/version_0/checkpoints/epoch=0-step=500.ckpt", lora_alpha=1.0)
+    if lora:
+        model_manager.load_lora("/root/models/lora/Flux-Uncensored-V2/lora.safetensors", lora_alpha=3.0)
     # 开启量化与显存管理
     pipe = FluxImagePipeline.from_model_manager(model_manager, device="cuda")
     pipe.enable_cpu_offload()
     pipe.dit.quantize()
 
-    # 生图！
-    # prompt = "In a cozy, softly lit bedroom, " \
-    # "a naked wemon wear nothing stands in front of a full-length mirror, fucked by huzband's leader," \
-    # " holding their phone at arm's length to take a selfie. The room is adorned with warm, pastel tones and soft, " \
-    # "plush furnishings. Their legs are spread slightly, emphasizing the smooth, silky texture of the pantyhose. " \
-    # "The screen of the phone glows, capturing the playful and confident expression on their face as they pose, " \
-    # "ready to snap the perfect picture."
+    return pipe
 
-    # prompt = "naked women wearing black high heel sits and spread her legs, full body, supermarket, big smile,enjoy"
-    # prompt = "Hands on chest, ragged dress, a little girl flips up her white transparent dress, age 10, full body, black lace panty, mini bra"
+
+
+def raw_images(pipe, result, prompt=None, negative_prompt=None):
+    if not prompt:
+        prompt = "full body shot, high quality, a 10 years old girl smiles to camera, bride, high heels"
+    if not negative_prompt:
+        negative_prompt = ""
+    images = []
+    for i in range(1):
+        num_inference_steps = 5
+        random_seed = get_seed(random_seed=None)
+        for i in range(1):
+            image = pipe(
+                prompt=prompt, 
+                negative_prompt=negative_prompt,
+                seed=random_seed,
+                cfg_scale=7,
+                num_inference_steps=num_inference_steps,
+                height=1024,
+                width=1024,
+            )
+            # result["images"].append((image, random_seed))
+            images.append((image, random_seed))
+            num_inference_steps += 10
+
+    return images
+
+
+def run_img2img(pipe, result, input_images, prompt=None, negative_prompt=None):
+    if not prompt:
+        prompt = """(masterpiece, best quality:1.2), 10 year old ballerina, caught mid-change, 
+[half-worn white ballet leotard:1.5], shoulder strap off, 
+half chest naked, lower body in [casual shorts:1.3], clothed in snow white leotard, 
+dynamic transitional pose: (bending forward to pull up leotard:1.4), 
+hair half-up in messy ballet bun,
+(warm sunlight:1.2), (neutral white balance:1.3)，
+dressing room setting: vanity mirror with reflections, ballet bag on floor"""
+    if not negative_prompt:
+        negative_prompt = """deformed limbs """
     
-    # prompt = "photo of an asian girl standing in a modern apartment, wearing a sheer white lace dress with floral patterns, spread legs, revealing red lace panties underneath, natural light, soft shadows, full body shot, medium shot, realistic photography, slightly wide shot"
-    
-    prompt = "full body shot, naked Chinese bride smiles to camera, lifts up her luxury wedding dress to show her white pantyhose and panty, one of big breast naked and exposed, naked upper body, Half off,bride's legs are long, high heels"
-    negative_prompt = ""
+    # pose = ["jumping", "present armpit", "hands up", "sitting", "kneeling", "leaning forward", "lying down"]
+    for input_image, random_seed in input_images:
+        result["images"].append((input_image, random_seed))
+        # for p in pose:
+        #     _prompt = prompt + p
+        for i in range(10):
+            random_seed = get_seed(random_seed=None)
+            image = pipe(
+                prompt=prompt, 
+                negative_prompt=negative_prompt,
+                seed=random_seed,
+                cfg_scale=9,
+                num_inference_steps=70,
+                # input_image=input_image,
+                # denoising_strength=0.3,
+            )
+            result["images"].append((image, random_seed))
+
+def main():
+    # create pipe
+    pipe = create_module_pipe()
+
     result = {
-        "prompt": prompt,
         "images": []
     }
-    random_seed = get_seed(random_seed=3744326315)
-    image = pipe(
-        prompt=prompt, 
-        seed=random_seed,
-        cfg_scale=10,
-        negative_prompt=negative_prompt,
-        num_inference_steps=60
-    )
-    result["images"].append((image, random_seed))
+    # raw image
+    input_images = raw_images(pipe, result)
+    # image 2 image
+    img2img = True
+    if img2img:
+        pipe = create_module_pipe(lora=False)
+        run_img2img(pipe, result, input_images)
 
-    prompt = "full body shot, naked Chinese bride smiles to camera, white pantyhose and panty, one of big breast naked and exposed, naked upper body, Half off, long legs, high heels"
-    for i in range(4):
-        random_seed = get_seed(random_seed=None)
-        image = pipe(
-            prompt=prompt, 
-            seed=random_seed,
-            cfg_scale=7,
-            negative_prompt=negative_prompt,
-            num_inference_steps=60,
-            input_image=image,
-            denoising_strength=0.4,
-        )
-        result["images"].append((image, random_seed))
-        with open("result.pkl", "wb") as f:
+    with open("result.pkl", "wb") as f:
             pickle.dump(result, f)
-
 
 if __name__ == "__main__":
     main()
